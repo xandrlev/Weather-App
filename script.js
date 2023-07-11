@@ -2,9 +2,10 @@
 import { getTime, getTimeAmPm } from "./components/getTime.js";
 import { isDay } from "./components/isDay.js";
 import { popup, classToggle } from "./components/popupToggle.js";
+import { setLocalStorage, getLocalStorage } from "./components/localStorage.js";
 
 export let store = {
-  city: "Gomel",
+  city: `${getLocalStorage('city')}`,
   temperature: 0,
   feelslike: 0,
   observationTime: `${getTimeAmPm()}`,
@@ -32,6 +33,9 @@ const fetchData = async () => {
     const result = await fetch(
       `${LINK}${store.city}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`
     );
+    // const result = await fetch(
+    //   `${LINK}${getLocalStorage('city', e.target.value)}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`
+    // );
     const data = await result.json();
 
     const {
@@ -140,11 +144,13 @@ textInput.addEventListener("input", (e) => {
     ...store,
     city: e.target.value,
   };
+  setLocalStorage("city", e.target.value);
 });
 
 submitForm.addEventListener("submit", (e) => {
   e.preventDefault();
   fetchData();
+  console.log(store);
   classToggle();
 });
 
