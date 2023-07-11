@@ -1,88 +1,127 @@
-const LINK =
-  "http://api.weatherstack.com/current?access_key=31ee9b09b9bf47759075bb036bad0a3c";
-
-const root = document.getElementById("root");
+import { getTime, getTimeAmPm } from "./components/getTime.js";
+import { isDay } from "./components/isDay.js";  `1`
 
 let store = {
   city: "Gomel",
   temperature: 0,
   feelslike: 0,
-  cloudcover: 0,
-  humidity: 0,
-  observationTime: "00:00 AM",
-  pressure: 0,
-  uvIndex: 0,
-  visibility: 0,
-  isDay: "yes",
+  observationTime: `${getTime()}`,
+  isDay: isDay(),
   description: "",
-  windSpeed: 0,
+  weatherIcon: null,
+  properties: {
+    cloudCover: {},
+    humidity: {},
+    windSpeed: {},
+    pressure: {},
+    uvIndex: {},
+    visibility: {},
+  },
 };
 
-const fetchData = async () => {
-  const result = await fetch(`${LINK}&query=${store.city}`);
-  const data = await result.json();
+const root = document.getElementById("root");
+const LINK = `https://api.openweathermap.org/data/2.5/weather?q=${store.city}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`;
 
-  const {
-    current: {
+const fetchData = async () => {
+  try {
+    const result = await fetch(LINK);
+    const data = await result.json();
+
+    const {
+      main: { temp: temperature, feels_like: feelslike, humidity, pressure },
+      clouds: { all: cloudCover },
+      wind: { speed: windSpeed },
+      weather,
+      visibility,
+    } = data;
+
+    store = {
+      ...store,
       temperature,
       feelslike,
-      cloudcover,
-      observation_time: observationTime,
-      humidity,
-      pressure,
-      uv_index: uvIndex,
-      visibility,
-      is_day: isDay,
-      weather_descriptions: description,
-      wind_speed: windSpeed,
-    },
-  } = data;
+      description: weather[0]["main"],
+      weatherIcon: weather[0]["icon"],
+      properties: {
+        cloudCover: {
+          title: "Cloud cover",
+          value: `${cloudCover}%`,
+          icon: "cloud.png",
+        },
+        humidity: {
+          title: "Humidity",
+          value: `${humidity}%`,
+          icon: "humidity.png",
+        },
+        windSpeed: {
+          title: "Wind speed",
+          value: `${windSpeed} km/h`,
+          icon: "wind.png",
+        },
+        pressure: {
+          title: "Pressure",
+          value: `${pressure} atm`,
+          icon: "gauge.png",
+        },
+        visibility: {
+          title: "Visibility",
+          value: `${visibility} m`,
+          icon: "visibility.png",
+        },
+      },
+    };
 
-  store = {
-    ...store,
-    temperature,
-    feelslike,
-    cloudcover,
-    observationTime,
-    humidity,
-    pressure,
-    uvIndex,
-    visibility,
-    isDay,
-    description: description[0],
-    windSpeed,
-  };
+    console.log(data);
 
-  renderComponent();
+    renderComponent();
+  } catch (error) {
+    console.log(error);
+    root.innerHTML = `DATA IS UPDATING`;
+  }
+};
 
-  console.log(data);
-  console.log(store);
+const renderProperties = (properties) => {
+  return Object.values(properties)
+    .map(({ title, value, icon }) => {
+      return `<div class="property">
+            <div class="property-icon">
+              <img src="./img/icons/${icon}" alt="${icon}">
+            </div>
+            <div class="property-info">
+              <div class="property-info__value">${value}</div>
+              <div class="property-info__description">${title}</div>
+            </div>
+          </div>`;
+    })
+    .join("");
 };
 
 const markup = () => {
-  const { city, description, observationTime, temperature } = store;
+  const { city, description, observationTime, temperature, isDay, properties } =
+    store;
+  const containerClassIsDay = isDay === "yes" ? "is-day" : "";
 
   return `<div class="container ">
             <div class="top">
               <div class="city">
                 <div class="city-subtitle">Weather Today in</div>
                   <div class="city-title" id="city">
-                  <span>${city}</span>
+                  <span>${city.toUpperCase()}</span>
                 </div>
               </div>
               <div class="city-info">
                 <div class="top-left">
-                <img class="icon" src="./img/" alt="" />
+                <img class="icon" src="./img/${description}.png" alt="" />
+                <div className="icon"></div>
                 <div class="description">${description}</div>
               </div>
             
               <div class="top-right">
                 <div class="city-info__subtitle">as of ${observationTime}</div>
-                <div class="city-info__title">${temperature}°C</div>
+                <div class="city-info__title">${Math.ceil(temperature)}°C</div>
               </div>
             </div>
           </div>
-        <div id="properties"></div>
+        <div id="properties">${renderProperties(properties)}</div>
       </div>`;
 };
 
