@@ -3,6 +3,7 @@ export const getTimeAmPm = () => {
   return date.toLocaleString("en-US", {
     hour: "numeric",
     minute: "numeric",
+    // second: 'numeric',
     hour12: true,
   });
 };

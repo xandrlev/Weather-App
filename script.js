@@ -1,11 +1,13 @@
+// import { store } from "./components/store.js";
 import { getTime, getTimeAmPm } from "./components/getTime.js";
-import { isDay } from "./components/isDay.js";  `1`
+import { isDay } from "./components/isDay.js";
+import { popup, classToggle } from "./components/popupToggle.js";
 
-let store = {
+export let store = {
   city: "Gomel",
   temperature: 0,
   feelslike: 0,
-  observationTime: `${getTime()}`,
+  observationTime: `${getTimeAmPm()}`,
   isDay: isDay(),
   description: "",
   weatherIcon: null,
@@ -20,11 +22,16 @@ let store = {
 };
 
 const root = document.getElementById("root");
-const LINK = `https://api.openweathermap.org/data/2.5/weather?q=${store.city}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`;
+const close = document.getElementById("close");
+const textInput = document.getElementById("text-input");
+const submitForm = document.getElementById("form");
+const LINK = `https://api.openweathermap.org/data/2.5/weather?q=`;
 
 const fetchData = async () => {
   try {
-    const result = await fetch(LINK);
+    const result = await fetch(
+      `${LINK}${store.city}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`
+    );
     const data = await result.json();
 
     const {
@@ -69,9 +76,6 @@ const fetchData = async () => {
         },
       },
     };
-
-    console.log(data);
-
     renderComponent();
   } catch (error) {
     console.log(error);
@@ -127,6 +131,21 @@ const markup = () => {
 
 const renderComponent = () => {
   root.innerHTML = markup();
+  city.addEventListener("click", classToggle);
+  close.addEventListener("click", classToggle);
 };
+
+textInput.addEventListener("input", (e) => {
+  store = {
+    ...store,
+    city: e.target.value,
+  };
+});
+
+submitForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  fetchData();
+  classToggle();
+});
 
 fetchData();
