@@ -1,4 +1,4 @@
-export const popup = document.getElementById("popup");
+const popup = document.getElementById("popup");
 export const classToggle = () => {
   popup.classList.toggle("active");
 };

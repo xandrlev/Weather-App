@@ -1,10 +1,10 @@
-export const setLocalStorage = (key, item) => {
-  localStorage.setItem(key, item);
+export const setLocalStorage = (key, value) => {
+  localStorage.setItem(key, value);
 };
 
 export const getLocalStorage = (key) => {
   if (!localStorage.getItem(key)) {
-    return "Gomel";
+    return "Minsk";
   }
   return localStorage.getItem(key);
 };

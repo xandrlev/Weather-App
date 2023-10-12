@@ -1,11 +1,10 @@
-// import { store } from "./components/store.js";
-import { getTime, getTimeAmPm } from "./components/getTime.js";
+import { getTimeAmPm } from "./components/getTime.js";
 import { isDay } from "./components/isDay.js";
-import { popup, classToggle } from "./components/popupToggle.js";
+import { classToggle } from "./components/popupToggle.js";
 import { setLocalStorage, getLocalStorage } from "./components/localStorage.js";
 
 export let store = {
-  city: `${getLocalStorage('city')}`,
+  city: `${getLocalStorage("city")}`,
   temperature: 0,
   feelslike: 0,
   observationTime: `${getTimeAmPm()}`,
@@ -26,16 +25,13 @@ const root = document.getElementById("root");
 const close = document.getElementById("close");
 const textInput = document.getElementById("text-input");
 const submitForm = document.getElementById("form");
-const LINK = `https://api.openweathermap.org/data/2.5/weather?q=`;
+const BASE_URL = `https://api.openweathermap.org/data/2.5/weather?q=`;
 
 const fetchData = async () => {
   try {
     const result = await fetch(
-      `${LINK}${store.city}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`
+      `${BASE_URL}${store.city}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`
     );
-    // const result = await fetch(
-    //   `${LINK}${getLocalStorage('city', e.target.value)}&lang=en&appid=deb0113f55ed5067948b2876a0353cb3&units=metric`
-    // );
     const data = await result.json();
 
     const {
@@ -80,11 +76,13 @@ const fetchData = async () => {
         },
       },
     };
+
     renderComponent();
   } catch (error) {
     console.log(error);
     root.innerHTML = `DATA IS UPDATING`;
   }
+  
 };
 
 const renderProperties = (properties) => {
@@ -111,7 +109,7 @@ const markup = () => {
   return `<div class="container ">
             <div class="top">
               <div class="city">
-                <div class="city-subtitle">Weather Today in</div>
+                <div class="city-subtitle">Weather today in</div>
                   <div class="city-title" id="city">
                   <span>${city.toUpperCase()}</span>
                 </div>
@@ -150,7 +148,6 @@ textInput.addEventListener("input", (e) => {
 submitForm.addEventListener("submit", (e) => {
   e.preventDefault();
   fetchData();
-  console.log(store);
   classToggle();
 });
 
