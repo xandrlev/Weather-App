@@ -34,6 +34,8 @@ const fetchData = async () => {
     );
     const data = await result.json();
 
+    console.log(data);
+
     const {
       main: { temp: temperature, feels_like: feelslike, humidity, pressure },
       clouds: { all: cloudCover },
@@ -47,7 +49,7 @@ const fetchData = async () => {
       temperature,
       feelslike,
       description: weather[0]["main"],
-      weatherIcon: weather[0]["icon"],
+      // weatherIcon: weather[0]["icon"],
       properties: {
         cloudCover: {
           title: "Cloud cover",
@@ -116,7 +118,7 @@ const markup = () => {
               </div>
               <div class="city-info">
                 <div class="top-left">
-                <img class="icon" src="./img/${description}.png" alt="" />
+                <img class="icon" src="./img/${description.toLowerCase()}.png" alt="" />
                 <div className="icon"></div>
                 <div class="description">${description}</div>
               </div>
